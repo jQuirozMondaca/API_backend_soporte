@@ -1,0 +1,545 @@
+{
+  "info": {
+    "_postman_id": "c8e8d2e4-9912-4c22-b2d9-e938928b5a01",
+    "name": "Soporte Técnico API - Evaluación Práctica N3",
+    "description": "Colección completa para verificar los 10 escenarios solicitados en la evaluación de Django REST Framework.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 - Obtener CSRF Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "let csrfCookie = pm.cookies.get(\"csrftoken\");",
+              "if (csrfCookie) {",
+              "    pm.collectionVariables.set(\"csrf_token\", csrfCookie);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/auth/csrf/",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "csrf", ""]
+        }
+      }
+    },
+    {
+      "name": "00 - Login Usuario Normal",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login exitoso (200)\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "let csrfCookie = pm.cookies.get(\"csrftoken\");",
+              "if (csrfCookie) {",
+              "    pm.collectionVariables.set(\"csrf_token\", csrfCookie);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"juan_perez\",\n    \"password\": \"User123*\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login/",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login", ""]
+        }
+      }
+    },
+    {
+      "name": "01 - Usuario registra solicitud válida (201 Created)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "var jsonData = pm.response.json();",
+              "if (jsonData.id) {",
+              "    pm.collectionVariables.set(\"solicitud_id\", jsonData.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"titulo\": \"Falla mouse inalámbrico\",\n    \"descripcion\": \"No responde el puntero al reiniciar el equipo\",\n    \"categoria\": \"Hardware\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    },
+    {
+      "name": "02 - Usuario consulta sus solicitudes (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    },
+    {
+      "name": "03 - Usuario consulta solicitud ajena (404 Not Found)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/solicitudes/{{solicitud_ajena_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", "{{solicitud_ajena_id}}", ""]
+        }
+      }
+    },
+    {
+      "name": "04 - Usuario normal intenta cambiar estado (400 Bad Request)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"estado\": \"Resuelto\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/{{solicitud_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", "{{solicitud_id}}", ""]
+        }
+      }
+    },
+    {
+      "name": "04B - Usuario actualiza solicitud con PUT (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Los campos protegidos no fueron alterados\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.usuario).to.eql(\"juan_perez\");",
+              "    pm.expect(jsonData.id).to.eql(Number(pm.variables.get(\"solicitud_id\")));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"titulo\": \"Falla mouse actualizada\",\n    \"descripcion\": \"El mouse sigue sin responder después de reiniciar.\",\n    \"categoria\": \"Hardware\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/{{solicitud_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", "{{solicitud_id}}", ""]
+        }
+      }
+    },
+    {
+      "name": "00 - Login Administrador",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login Admin 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "let csrfCookie = pm.cookies.get(\"csrftoken\");",
+              "if (csrfCookie) {",
+              "    pm.collectionVariables.set(\"csrf_token\", csrfCookie);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"admin_soporte\",\n    \"password\": \"Admin123*\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login/",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login", ""]
+        }
+      }
+    },
+    {
+      "name": "05 - Administrador cambia estado (200 OK)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"estado\": \"En Proceso\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/{{solicitud_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", "{{solicitud_id}}", ""]
+        }
+      }
+    },
+    {
+      "name": "06 - Usuario envía datos inválidos (400 Bad Request)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"titulo\": \"\",\n    \"descripcion\": \"\",\n    \"categoria\": \"Inexistente\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    },
+    {
+      "name": "07 - Administrador elimina solicitud (204 No Content)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 204 No Content\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/solicitudes/{{solicitud_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", "{{solicitud_id}}", ""]
+        }
+      }
+    },
+    {
+      "name": "08 - Cliente sin autenticación (403 Forbidden)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.cookies.jar().clear(pm.request.url, function (error) {",
+              "    if (error) { console.warn(\"No se pudieron limpiar las cookies:\", error); }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code es 403 Forbidden\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    },
+    {
+      "name": "00 - Logout (Cerrar Sesión)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Logout exitoso (200 OK)\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/logout/",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "logout", ""]
+        }
+      }
+    },
+    {
+      "name": "09 - Usuario reutiliza sesión cerrada (403 Forbidden)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Acceso rechazado tras logout (403 Forbidden)\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    },
+    {
+      "name": "10 - Escritura sin token CSRF válido (403 Forbidden)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Rechazo por falta de CSRF (403 Forbidden)\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"titulo\": \"Prueba CSRF\",\n    \"descripcion\": \"Intento sin token\",\n    \"categoria\": \"Software\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/solicitudes/",
+          "host": ["{{base_url}}"],
+          "path": ["solicitudes", ""]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "csrf_token",
+      "value": ""
+    },
+    {
+      "key": "solicitud_id",
+      "value": "1"
+    },
+    {
+      "key": "solicitud_ajena_id",
+      "value": ""
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+# ==============================
+# Entorno Virtual
+# ==============================
+venv/
+env/
+ENV/
+.venv/
+
+# ==============================
+# Archivos temporales de Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ==============================
+# Base de datos local y migraciones temporales
+# ==============================
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+
+# ==============================
+# Archivos estáticos y de subida (Media)
+# ==============================
+local_settings.py
+staticfiles/
+media/
+
+# ==============================
+# Editor / IDE (VS Code)
+# ==============================
+.vscode/
+*.code-workspace
+
+# ==============================
+# Archivos del Sistema Operativo (Windows)
+# ==============================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==============================
+# Archivos comprimidos de entrega
+# ==============================
+*.zip
+*.tar.gz
+*.rar
